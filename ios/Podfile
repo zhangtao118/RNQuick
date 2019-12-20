@@ -45,6 +45,8 @@ target 'quickmessage' do
 
   pod 'RNSVG', :path => '../node_modules/react-native-svg'
 
+  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
+
   target 'quickmessageTests' do
     inherit! :search_paths
     # Pods for testing
