@@ -32,12 +32,25 @@ export default class Stock extends React.Component {
       <>
         <StatusBar barStyle="dark-content" />
         <SafeAreaView>
+          <View style={styles.container}>
+            <View>
+              <Text style={styles.headText}>股票类型</Text>
+            </View>
+            {/* 现价 */}
+            <Text style={styles.headText}>现 &nbsp;&nbsp;&nbsp;&nbsp;价</Text>
+            {/* 涨跌 */}
+            <Text style={styles.headText}>涨 &nbsp;&nbsp;&nbsp;&nbsp;跌</Text>
+            {/* 涨幅 */}
+            <Text style={styles.headText}>涨 &nbsp;&nbsp;&nbsp;&nbsp;幅</Text>
+            {/* 最高 */}
+            <Text style={styles.headText}>最 &nbsp;&nbsp;&nbsp;&nbsp;高</Text>
+            {/* 最低 */}
+            <Text style={styles.headText}>最 &nbsp;&nbsp;&nbsp;&nbsp;低</Text>
+          </View>
           <FlatList
             keyExtractor={this._extraUniqueKey}
             data={this.state.data}
             renderItem={this._renderItem}
-            //添加头尾布局
-            ListHeaderComponent={this._createListHeader}
           />
         </SafeAreaView>
       </>
@@ -66,53 +79,12 @@ export default class Stock extends React.Component {
       </View>
     </TouchableNativeFeedback>
   );
-  _createListHeader = () => (
-    <View style={styles.container}>
-      <View>
-        <Text style={styles.headText}>股票类型</Text>
-      </View>
-      {/* 现价 */}
-      <Text style={styles.headText}>现    价</Text>
-      {/* 涨跌 */}
-      <Text style={styles.headText}>涨    跌</Text>
-      {/* 涨幅 */}
-      <Text style={styles.headText}>涨    幅</Text>
-      {/* 最高 */}
-      <Text style={styles.headText}>最    高</Text>
-      {/* 最低 */}
-      <Text style={styles.headText}>最    低</Text>
-    </View>
-  );
 
   componentDidMount() {
     this._stockShall();
   }
 
   _stockShall() {
-    // {
-    //   "error_code": 0,
-    //   "reason": "SUCCESSED!",
-    //   "result": {
-    //       "totalCount": "1086",/*总条数*/
-    //       "page": "1", /*当前页*/
-    //       "num": "20", /*显示条数*/
-    //       "data": [
-    //           {
-    // "symbol": "sh600004",/*代码*/
-    // "name": "白云机场",/*名称*/
-    // "trade": "11.590",/*最新价*/
-    // "pricechange": "-0.130",/*涨跌额*/
-    // "changepercent": "-1.109",/*涨跌幅*/
-    // "buy": "11.590",/*买入*/
-    // "sell": "11.600",/*卖出*/
-    // "settlement": "11.720",/*昨收*/
-    // "open": "11.670",/*今开*/
-    // "high": "11.800",/*最高*/
-    // "low": "11.570",/*最低*/
-    // "volume": 38781,/*成交量*/
-    // "amount": 45385925,/*成效额*/
-    // "code": "600004",/*简码*/
-    // "ticktime": "15:00:00"/*时间*/
     var params = {
       key: 'ce7ece35235339a4dbf0fe1e82f46d8e',
       stock: '', //	a表示A股，b表示B股,默认所有
@@ -147,5 +119,5 @@ const styles = StyleSheet.create({
   headText: {
     fontWeight: 'bold',
     fontSize: 14,
-  }
+  },
 });

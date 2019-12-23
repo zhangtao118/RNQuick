@@ -37,6 +37,7 @@ class My extends React.Component {
       suit: undefined,
       avoid: undefined,
       historyToday: [],
+      weather: '',
     };
   }
   render() {
@@ -60,12 +61,13 @@ class My extends React.Component {
     this._accountInfo();
     this._calendarDay();
     this._historyToday();
+    this._weather();
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     console.log(nextProps);
     this.setState({
-      packages: this._createListData(nextProps.count),
+      packages: this._createListData(nextProps.weather),
     });
   }
 
@@ -75,19 +77,29 @@ class My extends React.Component {
         <Text style={styles.itemText}>{item.name}</Text>
         <View style={styles.itemContainerTimesImage}>
           <Text style={styles.itemTimes}>{item.left_times}</Text>
-          <Image
-            style={styles.itemImage}
-            source={require('../../img/goRedirect.png')}
-          />
-          <Text>{item.count}</Text>
+          {item.isRightImage ? (
+            <Image
+              style={styles.itemImage}
+              source={require('../../img/goRedirect.png')}
+            />
+          ) : (
+            <View />
+          )}
+          <Text style={styles.itemWeather}>
+            {item.id === 1 ? item.weather : ''}
+          </Text>
         </View>
       </View>
     </TouchableNativeFeedback>
   );
 
   _onPress(item) {
-    if (item.id === 1) {
+    if (item.id === 2) {
+      //笑话
       this.props.navigation.navigate('Joke');
+    } else if (item.id === 3) {
+      //微信精选
+      this.props.navigation.navigate('WechatNews');
     } else {
       this.props.dispatch(increment());
     }
@@ -145,7 +157,7 @@ class My extends React.Component {
     var allList = [];
     for (let i = 0; i < this.state.historyToday.length; i++) {
       let history = this.state.historyToday[i];
-      console.log(history);
+      // console.log(history);
       allList.push(
         <View key={i} style={styles.slide1}>
           <Text style={styles.text}>
@@ -177,25 +189,25 @@ class My extends React.Component {
       });
   }
 
-  _createListData(count) {
+  _createListData(weather) {
     var array = [];
     array.push({
       id: 1,
-      name: '笑话大全',
-      isRightImage: true,
-      count: count,
+      name: '今日天气',
+      isRightImage: false,
+      weather: weather,
     });
     array.push({
       id: 2,
-      name: '今日油价',
-      isRightImage: false,
-      count: count,
+      name: '笑话大全',
+      isRightImage: true,
+      weather: weather,
     });
     array.push({
       id: 3,
-      name: '笑话大全',
+      name: '微信精选',
       isRightImage: true,
-      count: count,
+      weather: weather,
     });
     return array;
   }
@@ -214,7 +226,6 @@ class My extends React.Component {
         this.setState({
           login_name: res.login,
           headImage: res.avatar_url,
-          packages: this._createListData(this.props.count),
         });
       })
       .catch(error => {
@@ -239,6 +250,29 @@ class My extends React.Component {
         // console.log(res);
         this.setState({
           historyToday: res.result,
+        });
+      })
+      .catch(error => {
+        console.log('error:' + error);
+        Alert.alert(error);
+      });
+  }
+
+  _weather() {
+    var params = {
+      key: '7ea58f0186626a7c36ec86ef53cbda72',
+      city: '杭州',
+    };
+    APIService.getRequest('http://apis.juhe.cn/simpleWeather/query', params)
+      .then(res => {
+        console.log(res);
+        var future = res.result.future;
+        console.log(future[0].weather + future[0].temperature);
+        this.setState({
+          weather: future[0].weather + future[0].temperature,
+          packages: this._createListData(
+            future[0].weather + future[0].temperature,
+          ),
         });
       })
       .catch(error => {
@@ -402,5 +436,8 @@ const styles = StyleSheet.create({
   viewLine: {
     backgroundColor: '#f5f5f5',
     height: 0.5,
+  },
+  itemWeather: {
+    marginEnd: 5,
   },
 });

@@ -20,6 +20,7 @@ import BookScreen from './src/book/Book';
 import BookDetailScreen from './src/book/BookDetail';
 import JokeScreen from './src/my/Joke';
 import JokeDetailScreen from './src/my/JokeDetail';
+import WechatNewsScreen from './src/my/WechatNews';
 
 const navigator = createStackNavigator(
   {
@@ -30,6 +31,7 @@ const navigator = createStackNavigator(
     BookDetail: {screen: BookDetailScreen},
     Joke: {screen: JokeScreen},
     JokeDetail: {screen: JokeDetailScreen},
+    WechatNews: {screen: WechatNewsScreen},
   },
   {
     defaultNavigationOptions: {
