@@ -24,7 +24,6 @@ import APIService from '../net/APIService';
 import moment from 'moment/moment';
 import Swiper from 'react-native-swiper';
 
-import {increment} from '../redux/actions/CounterAction';
 import {connect} from 'react-redux';
 
 class My extends React.Component {
@@ -33,11 +32,10 @@ class My extends React.Component {
     this.state = {
       login_name: undefined,
       headImage: null,
-      packages: undefined,
+      packages: this._createListData(''),
       suit: undefined,
       avoid: undefined,
       historyToday: [],
-      weather: '',
     };
   }
   render() {
@@ -60,15 +58,33 @@ class My extends React.Component {
   componentDidMount() {
     this._accountInfo();
     this._calendarDay();
-    this._historyToday();
-    this._weather();
+    Promise.all([
+      APIService.getRequest('http://apis.juhe.cn/simpleWeather/query', {
+        key: '7ea58f0186626a7c36ec86ef53cbda72',
+        city: '杭州',
+      }),
+      APIService.getRequest('http://api.avatardata.cn/HistoryToday/LookUp', {
+        key: '1ddc2f984aca47c1a4e01213e7011baa',
+        yue: new Date().getMonth(),
+        ri: new Date().getDay(),
+        type: 2,
+      }),
+    ])
+      .then(arr => {
+        console.log(arr);
+        var futures = arr[0].result.future;
+        this.setState({
+          historyToday: arr[1].result,
+          packages: this._createListData(
+            futures[0].weather + futures[0].temperature,
+          ),
+        });
+      })
+      .catch(console.log.bind(console));
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     console.log(nextProps);
-    this.setState({
-      packages: this._createListData(nextProps.weather),
-    });
   }
 
   _renderItem = ({item}) => (
@@ -100,8 +116,6 @@ class My extends React.Component {
     } else if (item.id === 3) {
       //微信精选
       this.props.navigation.navigate('WechatNews');
-    } else {
-      this.props.dispatch(increment());
     }
   }
 
@@ -226,53 +240,6 @@ class My extends React.Component {
         this.setState({
           login_name: res.login,
           headImage: res.avatar_url,
-        });
-      })
-      .catch(error => {
-        console.log('error:' + error);
-        Alert.alert(error);
-      });
-  }
-
-  _historyToday() {
-    var date = new Date();
-    var params = {
-      key: '1ddc2f984aca47c1a4e01213e7011baa',
-      yue: date.getMonth(),
-      ri: date.getDay(),
-      type: 2,
-    };
-    APIService.getRequest(
-      'http://api.avatardata.cn/HistoryToday/LookUp',
-      params,
-    )
-      .then(res => {
-        // console.log(res);
-        this.setState({
-          historyToday: res.result,
-        });
-      })
-      .catch(error => {
-        console.log('error:' + error);
-        Alert.alert(error);
-      });
-  }
-
-  _weather() {
-    var params = {
-      key: '7ea58f0186626a7c36ec86ef53cbda72',
-      city: '杭州',
-    };
-    APIService.getRequest('http://apis.juhe.cn/simpleWeather/query', params)
-      .then(res => {
-        console.log(res);
-        var future = res.result.future;
-        console.log(future[0].weather + future[0].temperature);
-        this.setState({
-          weather: future[0].weather + future[0].temperature,
-          packages: this._createListData(
-            future[0].weather + future[0].temperature,
-          ),
         });
       })
       .catch(error => {
