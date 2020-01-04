@@ -150,10 +150,10 @@ android {
             keyPassword 'android'
         }
          release {
-            storeFile file('keystore.keystore')
-            storePassword '123456'
-            keyAlias 'alias'
-            keyPassword '123456'
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
         }
     }
     buildTypes {
@@ -185,6 +185,7 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-update')
     implementation project(':@react-native-community_async-storage')
     implementation project(':react-native-svg')
     implementation project(':react-native-webview')

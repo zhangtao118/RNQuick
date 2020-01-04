@@ -47,6 +47,8 @@ target 'quickmessage' do
 
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
 
+  pod 'react-native-update', :path => '../node_modules/react-native-update'
+
   target 'quickmessageTests' do
     inherit! :search_paths
     # Pods for testing

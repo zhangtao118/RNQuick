@@ -1,6 +1,18 @@
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 
+import {Platform, Alert} from 'react-native';
+import {
+  isFirstTime,
+  checkUpdate,
+  downloadUpdate,
+  switchVersion,
+  markSuccess,
+} from 'react-native-update';
+
+import _updateConfig from './update.json';
+const {appKey} = _updateConfig[Platform.OS];
+
 import {applyMiddleware, createStore} from 'redux';
 import {Provider} from 'react-redux';
 import logger from 'redux-logger';
@@ -50,13 +62,53 @@ const reducers = persistReducer(config, allReducers);
 const store = createStore(reducers, applyMiddleware(logger, thunk)); // 创建 Store
 const persistor = persistStore(store);
 
-const App = createAppContainer(navigator);
+const AppContainer = createAppContainer(navigator);
 
-export default () => (
-  <Provider store={store}>
-    <PersistGate persistor={persistor}>
-      <App />
-    </PersistGate>
-  </Provider>
-);
-// export default App;
+export default class App extends React.Component {
+  componentDidMount() {
+    this.check();
+  }
+
+  render() {
+    return (
+      <>
+        <Provider store={store}>
+          <PersistGate persistor={persistor}>
+            <AppContainer />
+          </PersistGate>
+        </Provider>
+      </>
+    );
+  }
+
+  check() {
+    if (isFirstTime) {
+      markSuccess();
+    }
+
+    checkUpdate(appKey)
+      .then(info => {
+        if (info.expired) {
+        } else if (info.upToDate) {
+        } else {
+          downloadUpdate(info)
+            .then(hash => {
+              Alert.alert('提示', '检测到新版本,请点击安装', [
+                {
+                  text: '安装',
+                  onPress: () => {
+                    switchVersion(hash);
+                  },
+                },
+              ]);
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+}
